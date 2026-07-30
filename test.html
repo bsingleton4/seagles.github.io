@@ -1,24 +1,617 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Lillies Sewing | Handmade Quilts & Crafts</title>
+    <style>
+        :root {
+            --primary-color: #7b5278;
+            --secondary-color: #f7f3f7;
+            --accent-color: #d4a5a5;
+            --text-color: #333333;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: var(--text-color);
+            background-color: var(--secondary-color);
+            line-height: 1.6;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--white);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+        }
+
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .cart-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(123, 82, 120, 0.75), rgba(123, 82, 120, 0.75)), url('https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            color: var(--white);
+            text-align: center;
+            padding: 120px 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 650px;
+            margin: 0 auto 30px auto;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: var(--white);
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background-color: #c28e8e;
+        }
+
+        /* Category Filter Buttons */
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--white);
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        /* Products Section */
+        .container {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            height: 220px;
+            background-color: #e0d0e0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .product-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .product-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .product-info p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .price {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            background-color: var(--white);
+            padding: 60px 20px;
+            margin-top: 60px;
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background-color: var(--secondary-color);
+            padding: 25px;
+            border-radius: 8px;
+            font-style: italic;
+            position: relative;
+        }
+
+        .testimonial-card p {
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .testimonial-card span {
+            font-style: normal;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: block;
+            text-align: right;
+        }
+
+        /* Cart Modal Drawer */
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100%;
+            background-color: var(--white);
+            box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-modal.open {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-body {
+            padding: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-details h4 {
+            font-size: 1rem;
+            color: var(--primary-color);
+        }
+
+        .cart-item-details p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #d9534f;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .cart-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            background-color: #fafafa;
+        }
+
+        .cart-summary-line {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .cart-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            display: none;
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 30px;
+            margin-top: 50px;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
-
 <body>
-  <header>test page</header>  
-  <a href="this is a link">help</a>
-   <a href="this is a link">about</a>
-<p>the first quilt is a flower quilt</p>
-https://www.google.com/imgres?q=a%20cute%20flower%20quilt&imgurl=https%3A%2F%2fcdn.prod.website-files.com%2F5f192aedb904c96a42204fb3%2F5f235f7747e5fb8da575fe2e_Happy-Flower-QAL-Block-2a.jpeg&imgrefurl=https%3A%2F%2Fwww.arabesque-scissors.com%2Farticles%2Fhappy-flower-quilt-along-blocks-1-4&docid=aC4V0L5f31Yd9M&tbnid=xM63gdd048tG8M&vet=12ahUKEwih4PmezfOVAxV84MkDHbK_CiMQnPAOegUIpAUQAA..i&w=750&h=754&hcb=2&ved=2ahUKEwih4PmezfOVAxV84MkDHbK_CiMQnPAOegUIpAUQAA
-<p>this is a 12 by 12</p>
 
-<aside></aside>
-<footer></footer>
+    <!-- Header -->
+    <header>
+        <a href="#" class="logo">🧵 Lillies Sewing</a>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#shop">Shop</a>
+            <button class="cart-icon-btn" onclick="toggleCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
+        </nav>
+    </header>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Handmade with Love & Thread</h1>
+        <p>Discover heirloom-quality quilts, custom home decor, and unique handcrafted sewn goods made to brighten your space.</p>
+        <a href="#shop" class="btn">Shop Collection</a>
+    </section>
 
+    <!-- Shop Section -->
+    <div class="container" id="shop">
+        <h2 class="section-title">Featured Creations</h2>
+        
+        <!-- Category Filters -->
+        <div class="filter-container">
+            <button class="filter-btn active" onclick="filterProducts('all')">All Items</button>
+            <button class="filter-btn" onclick="filterProducts('quilts')">Quilts</button>
+            <button class="filter-btn" onclick="filterProducts('decor')">Home Decor</button>
+            <button class="filter-btn" onclick="filterProducts('accessories')">Accessories</button>
+        </div>
 
+        <div class="product-grid" id="productGrid">
+            
+            <!-- Product 1 -->
+            <div class="product-card" data-category="quilts">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&w=500&q=80');"></div>
+                <div class="product-info">
+                    <h3>Patchwork Heirloom Quilt</h3>
+                    <p>Cozy, hand-stitched patchwork quilt made with 100% breathable cotton fabrics.</p>
+                    <span class="price">$180.00</span>
+                    <button class="btn" onclick="addToCart('Patchwork Heirloom Quilt', 180.00)">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card" data-category="decor">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=500&q=80');"></div>
+                <div class="product-info">
+                    <h3>Decorative Throw Pillow Set</h3>
+                    <p>A pair of stylish, custom-sewn accent pillow covers with hidden zippers.</p>
+                    <span class="price">$45.00</span>
+                    <button class="btn" onclick="addToCart('Decorative Throw Pillow Set', 45.00)">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card" data-category="accessories">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1590736969955-71cc9480175f?auto=format&fit=crop&w=500&q=80');"></div>
+                <div class="product-info">
+                    <h3>Reusable Fabric Tote Bag</h3>
+                    <p>Durable, heavy-duty quilted tote bag perfect for grocery runs or everyday use.</p>
+                    <span class="price">$30.00</span>
+                    <button class="btn" onclick="addToCart('Reusable Fabric Tote Bag', 30.00)">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="product-card" data-category="quilts">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1578932750294-f5075e85f44a?auto=format&fit=crop&w=500&q=80');"></div>
+                <div class="product-info">
+                    <h3>Custom Baby Quilt</h3>
+                    <p>Ultra-soft, miniature quilt tailored for nursery rooms and tummy time.</p>
+                    <span class="price">$95.00</span>
+                    <button class="btn" onclick="addToCart('Custom Baby Quilt', 95.00)">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Product 5 -->
+            <div class="product-card" data-category="decor">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=500&q=80');"></div>
+                <div class="product-info">
+                    <h3>Handmade Linen Apron</h3>
+                    <p>Elegant, cross-back linen apron with deep pockets for cooking or crafting.</p>
+                    <span class="price">$40.00</span>
+                    <button class="btn" onclick="addToCart('Handmade Linen Apron', 40.00)">Add to Cart</button>
+                </div>
+            </div>
+
+            <!-- Product 6 -->
+            <div class="product-card" data-category="accessories">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=500&q=80');"></div>
+                <div class="product-info">
+                    <h3>Quilted Pincushion Set</h3>
+                    <p>A lovely handmade matching pincushion and thread catcher bowl.</p>
+                    <span class="price">$20.00</span>
+                    <button class="btn" onclick="addToCart('Quilted Pincushion Set', 20.00)">Add to Cart</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <h2 class="section-title">Loved by Our Customers</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <p>"The heirloom quilt I purchased is breathtakingly gorgeous. You can feel the true craftsmanship and love put into every stitch."</p>
+                <span>— Sarah M.</span>
+            </div>
+            <div class="testimonial-card">
+                <p>"The pillow set completely transformed my living room vibe. Amazing quality fabrics and super fast shipping!"</p>
+                <span>— Jessica L.</span>
+            </div>
+            <div class="testimonial-card">
+                <p>"My everyday tote bag is so durable. I get compliments on it everywhere I go. Will definitely be buying more gifts here."</p>
+                <span>— David R.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide-out Cart Drawer -->
+    <div class="overlay" id="overlay" onclick="toggleCart()"></div>
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h3>Your Shopping Cart</h3>
+            <button class="close-cart" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-body" id="cartItemsContainer">
+            <p style="text-align: center; color: #777; margin-top: 20px;">Your cart is empty.</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-summary-line">
+                <span>Subtotal:</span>
+                <span id="cartSubtotal">$0.00</span>
+            </div>
+            <div class="cart-summary-line">
+                <span>Estimated Tax (8%):</span>
+                <span id="cartTax">$0.00</span>
+            </div>
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0.00</span>
+            </div>
+            <button class="btn" style="width: 100%; text-align: center;" onclick="checkout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Lillies Sewing. All rights reserved. Crafted with care.</p>
+    </footer>
+
+    <!-- JavaScript for Functionality -->
+    <script>
+        let cart = [];
+        const TAX_RATE = 0.08; // 8% sales tax
+
+        function toggleCart() {
+            const cartModal = document.getElementById('cartModal');
+            const overlay = document.getElementById('overlay');
+            cartModal.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            updateCartUI();
+            toggleCart(); 
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function filterProducts(category) {
+            const cards = document.querySelectorAll('.product-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                alert('Your cart is empty! Add some items before checking out.');
+                return;
+            }
+            
+            let subtotal = cart.reduce((sum, item) => sum + item.price, 0);
+            let tax = subtotal * TAX_RATE;
+            let total = subtotal + tax;
+            
+            alert(`Thank you for your order! Your total payment of $${total.toFixed(2)} (including $${tax.toFixed(2)} tax) was successful.`);
+            
+            cart = [];
+            updateCartUI();
+            toggleCart();
+        }
+
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItemsContainer = document.getElementById('cartItemsContainer');
+            const cartSubtotal = document.getElementById('cartSubtotal');
+            const cartTax = document.getElementById('cartTax');
+            const cartTotal = document.getElementById('cartTotal');
+
+            cartCount.textContent = cart.length;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p style="text-align: center; color: #777; margin-top: 20px;">Your cart is empty.</p>';
+                cartSubtotal.textContent = '$0.00';
+                cartTax.textContent = '$0.00';
+                cartTotal.textContent = '$0.00';
+                return;
+            }
+
+            let html = '';
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                subtotal += item.price;
+                html += `
+                    <div class="cart-item">
+                        <div class="cart-item-details">
+                            <h4>${item.name}</h4>
+                            <p>$${item.price.toFixed(2)}</p>
+                        </div>
+                        <button class="remove-btn" onclick="removeFromCart(${index})">Remove</button>
+                    </div>
+                `;
+            });
+
+            let tax = subtotal * TAX_RATE;
+            let total = subtotal + tax;
+
+            cartItemsContainer.innerHTML = html;
+            cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+            cartTax.textContent = `$${tax.toFixed(2)}`;
+            cartTotal.textContent = `$${total.toFixed(2)}`;
+        }
+    </script>
 </body>
-
 </html>
+         

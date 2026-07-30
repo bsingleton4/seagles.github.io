@@ -1,0 +1,646 @@
+ <!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Karaoke Game</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #38bdf8;
+            --accent: #f43f5e;
+            --text: #f8fafc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        p.subtitle {
+            color: #94a3b8;
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        .dashboard {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .stat-box h3 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .stat-box span {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .lyrics-display {
+            font-size: 2rem;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #090d16;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            border: 2px solid #334155;
+            transition: all 0.2s ease;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: #0f172a;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #7dd3fc;
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style></head><body>
+
+    <div class="container">
+        <h1>🎵 Web Karaoke</h1>
+        <p class="subtitle">Sing along with the lyrics and music to score points!</p>
+
+        <!-- Song selection screen -->
+        <div id="setup-screen">
+            <select id="song-select" style="padding: 10px; font-size: 1rem; border-radius: 6px; margin-bottom: 20px; background: #334155; color: white; border: none; max-width: 100%;">
+                <optgroup label="👑 Michael Jackson Hits">
+                    <option value="billiejean">Billie Jean</option>
+                    <option value="thriller">Thriller</option>
+                    <option value="smoothcriminal">Smooth Criminal</option>
+                    <option value="beatit">Beat It</option>
+                    <option value="bad">Bad</option>
+                </optgroup>
+                <optgroup label="✨ KATSEYE Hits">
+                    <option value="touch">Touch</option>
+                    <option value="debut">Debut</option>
+                    <option value="gnarly">Gnarly</option>
+                </optgroup>
+                <optgroup label="🌟 Bruno Mars Hits">
+                    <option value="uptown">Uptown Funk</option>
+                    <option value="locked">Locked Out of Heaven</option>
+                    <option value="magic24">24K Magic</option>
+                    <option value="justtheway">Just the Way You Are</option>
+                    <option value="wheniwas">When I Was Your Man</option>
+                </optgroup>
+                <optgroup label="🧸 Classics & Nursery Rhymes">
+                    <option value="twinkle">Twinkle Twinkle Little Star</option>
+                    <option value="happy">Happy Birthday</option>
+                    <option value="row">Row, Row, Row Your Boat</option>
+                    <option value="sunshine">You Are My Sunshine</option>
+                    <option value="abc">Alphabet Song (ABC)</option>
+                    <option value="mary">Mary Had a Little Lamb</option>
+                    <option value="spider">Itsy Bitsy Spider</option>
+                    <option value="wheels">Wheels on the Bus</option>
+                    <option value="london">London Bridge Is Falling Down</option>
+                    <option value="oldmac">Old MacDonald Had a Farm</option>
+                    <option value="bumblebee">I'm Bringing Home a Baby Bumblebee</option>
+                    <option value="hokey">Hokey Pokey</option>
+                    <option value="bingo">B-I-N-G-O</option>
+                    <option value="shell">If You're Happy and You Know It</option>
+                </optgroup>
+            </select>
+            <br>
+            <button id="start-btn">Start Singing!</button>
+        </div>
+
+        <!-- Gameplay screen -->
+        <div id="game-screen" class="hidden">
+            <div class="dashboard">
+                <div class="stat-box">
+                    <h3>Score</h3>
+                    <span id="score-val">0</span>
+                </div>
+                <div class="stat-box">
+                    <h3>Pitch Match</h3>
+                    <span id="pitch-val">Ready</span>
+                </div>
+            </div>
+
+            <div id="lyrics-box" class="lyrics-display">
+                Get Ready...
+            </div>
+
+            <button id="stop-btn" style="background-color: var(--accent); color: white;">Quit Song</button>
+        </div>
+    </div>
+
+    <script>
+        // Song Database featuring Michael Jackson, KATSEYE, Bruno Mars, and classics
+        const songs = {
+            billiejean: {
+                title: "Billie Jean",
+                notes: [
+                    { time: 1000, text: "She was more like a beauty queen from a movie scene...", melody: [440.00, 493.88, 523.25, 523.25, 493.88, 440.00] },
+                    { time: 5000, text: "I said I don't care, but what do you mean?", melody: [440.00, 493.88, 523.25, 587.33, 523.25] },
+                    { time: 9000, text: "The chair is not my son...", melody: [392.00, 440.00, 493.88, 440.00] },
+                    { time: 13000, text: "She says I am the one...", melody: [392.00, 440.00, 523.25] },
+                    { time: 17000, text: "Billie Jean is not my lover! Hee-hee!", melody: [523.25, 587.33, 659.25, 587.33, 523.25] },
+                    { time: 21000, text: "Shamone! 🕺", melody: [783.99] }
+                ],
+                duration: 24000
+            },
+            thriller: {
+                title: "Thriller",
+                notes: [
+                    { time: 1000, text: "It's close to midnight, and something evil's lurking in the dark...", melody: [329.63, 349.23, 392.00, 392.00, 349.23, 329.63] },
+                    { time: 5000, text: "Under the moonlight, you see a sight that almost stops your heart...", melody: [329.63, 349.23, 392.00, 440.00, 392.00, 349.23] },
+                    { time: 9000, text: "You try to scream, but terror takes the sound before you make it...", melody: [392.00, 440.00, 493.88, 523.25, 493.88, 440.00] },
+                    { time: 13000, text: "You start to freeze as horror looks you right between the eyes...", melody: [392.00, 440.00, 493.88, 523.25] },
+                    { time: 17000, text: "Cause this is thriller, thriller night! 🧟", melody: [523.25, 587.33, 659.25, 783.99] }
+                ],
+                duration: 21500
+            },
+            smoothcriminal: {
+                title: "Smooth Criminal",
+                notes: [
+                    { time: 1000, text: "As he came into the window...", melody: [440.00, 493.88, 523.25, 587.33] },
+                    { time: 4000, text: "It was the sound of a crescendo...", melody: [587.33, 659.25, 587.33, 523.25] },
+                    { time: 7000, text: "He came into her apartment...", melody: [440.00, 493.88, 523.25, 587.33] },
+                    { time: 10000, text: "He left the bloodstains on the carpet...", melody: [587.33, 659.25, 698.46, 659.25] },
+                    { time: 13000, text: "Annie, are you ok?", melody: [523.25, 493.88, 440.00] },
+                    { time: 16000, text: "So, Annie, are you ok, are you ok, Annie?", melody: [523.25, 587.33, 523.25, 493.88, 440.00] },
+                    { time: 19000, text: "You've been hit by, you've been struck by, a smooth criminal! ✨", melody: [659.25, 783.99, 880.00] }
+                ],
+                duration: 22000
+            },
+            beatit: {
+                title: "Beat It",
+                notes: [
+                    { time: 1000, text: "They told him, 'Don't you ever come around here'...", melody: [392.00, 440.00, 493.88, 523.25] },
+                    { time: 4500, text: "'Don't wanna see your face, you better disappear'", melody: [523.25, 587.33, 523.25, 493.88] },
+                    { time: 8000, text: "The fire's in their eyes and their words are really clear...", melody: [440.00, 493.88, 523.25, 587.33] },
+                    { time: 11500, text: "So beat it, just beat it!", melody: [659.25, 587.33, 523.25, 440.00] },
+                    { time: 15000, text: "🎸 (Epic Guitar Solo) 🎸", melody: [783.99, 880.00, 987.77] }
+                ],
+                duration: 18500
+            },
+            bad: {
+                title: "Bad",
+                notes: [
+                    { time: 1000, text: "Your word is good, when you're around...", melody: [329.63, 349.23, 392.00, 440.00] },
+                    { time: 4000, text: "'Cause I'm bad, I'm bad, come on!", melody: [523.25, 587.33, 523.25, 440.00] },
+                    { time: 7000, text: "You know I'm bad, I'm bad, you know it!", melody: [440.00, 493.88, 523.25, 587.33] },
+                    { time: 10000, text: "And the whole world has to answer right now...", melody: [523.25, 493.88, 440.00, 392.00] },
+                    { time: 13000, text: "'Cause I'm bad, I'm bad, shamone! 😎", melody: [659.25, 783.99, 880.00] }
+                ],
+                duration: 17000
+            },
+            touch: {
+                title: "Touch",
+                notes: [
+                    { time: 1000, text: "Ah-ah, touch...", melody: [440.00, 493.88, 523.25] },
+                    { time: 4000, text: "You keep me warm in the cold of winter...", melody: [523.25, 587.33, 659.25, 587.33, 523.25] },
+                    { time: 7000, text: "Every time you look at me...", melody: [493.88, 523.25, 587.33, 523.25] },
+                    { time: 10000, text: "I lose control completely!", melody: [523.25, 659.25, 698.46, 659.25, 587.33] },
+                    { time: 13000, text: "Baby, it's a rush...", melody: [440.00, 493.88, 523.25] },
+                    { time: 16000, text: "✨ Touch me like that! ✨", melody: [659.25, 783.99, 880.00] }
+                ],
+                duration: 20000
+            },
+            debut: {
+                title: "Debut",
+                notes: [
+                    { time: 1000, text: "I'm about to break it out...", melody: [349.23, 392.00, 440.00, 523.25] },
+                    { time: 4000, text: "Watch me shine, watch me glow", melody: [523.25, 587.33, 659.25, 587.33] },
+                    { time: 7000, text: "This is my debut, look out!", melody: [440.00, 523.25, 587.33, 659.25] },
+                    { time: 10000, text: "Never gonna let them slow me down", melody: [523.25, 493.88, 440.00, 392.00] },
+                    { time: 13000, text: "Yeah, we run the show!", melody: [440.00, 523.25, 659.25] },
+                    { time: 16000, text: "🔥 Spotlight on me! 🔥", melody: [783.99] }
+                ],
+                duration: 20000
+            },
+            gnarly: {
+                title: "Gnarly",
+                notes: [
+                    { time: 1000, text: "So gnarly, so sweet...", melody: [392.00, 440.00, 493.88, 523.25] },
+                    { time: 4000, text: "Walking down the street to a heavy beat", melody: [523.25, 587.33, 523.25, 493.88, 440.00] },
+                    { time: 7000, text: "You can't touch this energy", melody: [440.00, 493.88, 523.25, 587.33] },
+                    { time: 10000, text: "We do it our own way, effortlessly", melody: [587.33, 659.25, 587.33, 523.25, 440.00] },
+                    { time: 13000, text: "Too cool, too wild!", melody: [440.00, 523.25, 659.25] },
+                    { time: 16000, text: "💫 Gnarly! 💫", melody: [783.99] }
+                ],
+                duration: 20000
+            },
+            uptown: {
+                title: "Uptown Funk",
+                notes: [
+                    { time: 1000, text: "Dota, dot-dot, dota-dot-dot-doo...", melody: [392.00, 392.00, 440.00, 523.25, 440.00, 392.00] },
+                    { time: 4000, text: "This hit, that ice cold...", melody: [329.63, 329.63, 329.63, 392.00, 329.63] },
+                    { time: 7000, text: "Michelle Pfeiffer, that white gold", melody: [392.00, 440.00, 523.25, 523.25, 440.00] },
+                    { time: 10000, text: "This one, for them hood girls,", melody: [329.63, 329.63, 392.00, 440.00, 392.00] },
+                    { time: 13000, text: "Good girls straight masterpieces!", melody: [392.00, 523.25, 523.25, 659.25] },
+                    { time: 16000, text: "Stylin', whilin', livin' it up in the city", melody: [440.00, 523.25, 593.16, 523.25, 440.00] },
+                    { time: 19000, text: "Don't believe me, just watch! (Hoo!)", melody: [392.00, 440.00, 523.25, 659.25] },
+                    { time: 22000, text: "Uptown funk gonna give it to you!", melody: [523.25, 440.00, 392.00, 329.63] },
+                    { time: 25000, text: "🔥 Uptown Funk You Up! 🔥", melody: [523.25, 659.25, 783.99] }
+                ],
+                duration: 27500
+            },
+            locked: {
+                title: "Locked Out of Heaven",
+                notes: [
+                    { time: 1000, text: "One, two, three, four!", melody: [261.63, 293.66, 329.63, 349.23] },
+                    { time: 4000, text: "Oh yeah, yeah...", melody: [392.00, 440.00, 392.00] },
+                    { time: 7000, text: "Never had nobody do me like you do", melody: [392.00, 440.00, 523.25, 523.25, 440.00, 392.00] },
+                    { time: 10000, text: "Woah-oh-oh-oh-oh, yeah!", melody: [659.25, 523.25, 440.00, 392.00] },
+                    { time: 13000, text: "You make me feel like I'm locked out of heaven!", melody: [523.25, 440.00, 392.00, 329.63, 392.00, 523.25] },
+                    { time: 16000, text: "For too long, for too long...", melody: [392.00, 329.63, 293.66, 261.63] },
+                    { time: 19000, text: "🎸 (Guitar Solo Jam) 🎸", melody: [523.25, 659.25, 783.99, 659.25] },
+                    { time: 22000, text: "Yeah, yeah, yeah!", melody: [523.25, 523.25, 523.25] }
+                ],
+                duration: 24500
+            },
+            magic24: {
+                title: "24K Magic",
+                notes: [
+                    { time: 1000, text: "Tonight...", melody: [261.63, 329.63, 392.00] },
+                    { time: 4000, text: "I just want to take you higher", melody: [392.00, 440.00, 523.25, 440.00, 392.00] },
+                    { time: 7000, text: "Throw your hands in the air!", melody: [440.00, 523.25, 593.16, 523.25] },
+                    { time: 10000, text: "Let's set this party off right...", melody: [392.00, 329.63, 293.66, 392.00] },
+                    { time: 13000, text: "Players, put your pinky rings to the moon!", melody: [392.00, 440.00, 523.25, 523.25, 440.00, 392.00] },
+                    { time: 16000, text: "Girls, what y'all tryna do?", melody: [329.63, 392.00, 440.00, 392.00] },
+                    { time: 19000, text: "24 karat magic in the air!", melody: [523.25, 659.25, 523.25, 440.00, 392.00] },
+                    { time: 22000, text: "✨ Smoove! ✨", melody: [783.99] }
+                ],
+                duration: 24500
+            },
+            justtheway: {
+                title: "Just the Way You Are",
+                notes: [
+                    { time: 1000, text: "Oh, her eyes, her eyes...", melody: [392.00, 440.00, 523.25, 523.25] },
+                    { time: 4000, text: "Make the stars look like they're not shinin'", melody: [523.25, 593.16, 659.25, 523.25, 440.00] },
+                    { time: 7000, text: "Her hair, her hair falls perfectly without her tryin'", melody: [392.00, 440.00, 523.25, 523.25, 440.00, 392.00] },
+                    { time: 10000, text: "She's so beautiful...", melody: [329.63, 392.00, 440.00, 392.00] },
+                    { time: 13000, text: "And I tell her every day...", melody: [261.63, 293.66, 329.63, 392.00] },
+                    { time: 16000, text: "When I see your face...", melody: [392.00, 440.00, 523.25, 440.00] },
+                    { time: 19000, text: "There's not a thing that I would change!", melody: [392.00, 329.63, 293.66, 329.63, 392.00] },
+                    { time: 22000, text: "'Cause you're amazing, just the way you are! ❤️", melody: [523.25, 659.25, 523.25, 440.00, 392.00] }
+                ],
+                duration: 24500
+            },
+            wheniwas: {
+                title: "When I Was Your Man",
+                notes: [
+                    { time: 1000, text: "Same bed, but it feels just a little bit bigger now", melody: [329.63, 329.63, 349.23, 329.63, 293.66, 261.63] },
+                    { time: 5000, text: "Our song on the radio, but it don't sound the same", melody: [293.66, 329.63, 349.23, 392.00, 349.23, 329.63] },
+                    { time: 9000, text: "When our friends talk about you, it just tears me up", melody: [329.63, 392.00, 440.00, 392.00, 349.23, 329.63] },
+                    { time: 13000, text: "'Cause my heart breaks when I hear your name", melody: [293.66, 329.63, 349.23, 329.63, 293.66, 261.63] },
+                    { time: 17000, text: "Mm, too little, too late...", melody: [261.63, 293.66, 329.63] },
+                    { time: 21000, text: "I should've bought you flowers...", melody: [392.00, 440.00, 523.25, 440.00] },
+                    { time: 25000, text: "And held your hand...", melody: [392.00, 329.63, 293.66] }
+                ],
+                duration: 27500
+            },
+            twinkle: {
+                title: "Twinkle Twinkle Little Star",
+                notes: [
+                    { time: 1000, text: "Twinkle, twinkle, little star,", melody: [261.63, 261.63, 392.00, 392.00, 440.00, 440.00, 392.00] },
+                    { time: 4000, text: "How I wonder what you are!", melody: [349.23, 349.23, 329.63, 329.63, 293.66, 293.66, 261.63] },
+                    { time: 7000, text: "Up above the world so high,", melody: [392.00, 392.00, 349.23, 349.23, 329.63, 329.63, 293.66] },
+                    { time: 10000, text: "Like a diamond in the sky.", melody: [392.00, 392.00, 349.23, 349.23, 329.63, 329.63, 293.66] },
+                    { time: 13000, text: "Twinkle, twinkle, little star,", melody: [261.63, 261.63, 392.00, 392.00, 440.00, 440.00, 392.00] },
+                    { time: 16000, text: "How I wonder what you are!", melody: [349.23, 349.23, 329.63, 329.63, 293.66, 293.66, 261.63] },
+                    { time: 19000, text: "🎶 (Instrumental Break) 🎶", melody: [261.63, 329.63, 392.00, 523.25] },
+                    { time: 22000, text: "Great Job!", melody: [523.25] }
+                ],
+                duration: 24000
+            },
+            happy: {
+                title: "Happy Birthday",
+                notes: [
+                    { time: 1000, text: "Happy birthday to you,", melody: [261.63, 261.63, 293.66, 261.63, 349.23, 329.63] },
+                    { time: 4000, text: "Happy birthday to you,", melody: [261.63, 261.63, 293.66, 261.63, 392.00, 349.23] },
+                    { time: 7000, text: "Happy birthday dear friend,", melody: [261.63, 261.63, 523.25, 440.00, 349.23, 329.63, 293.66] },
+                    { time: 10000, text: "Happy birthday to you!", melody: [466.16, 466.16, 440.00, 349.23, 392.00, 349.23] },
+                    { time: 13000, text: "🎶 (Awesome Vocals!) 🎶", melody: [349.23, 392.00, 440.00] },
+                    { time: 16000, text: "Encore!", melody: [523.25] }
+                ],
+                duration: 18000
+            },
+            row: {
+                title: "Row, Row, Row Your Boat",
+                notes: [
+                    { time: 1000, text: "Row, row, row your boat,", melody: [261.63, 261.63, 261.63, 293.66, 329.63] },
+                    { time: 4000, text: "Gently down the stream,", melody: [329.63, 293.66, 329.63, 349.23, 392.00] },
+                    { time: 7000, text: "Merrily, merrily, merrily, merrily,", melody: [523.25, 523.25, 523.25, 392.00, 392.00, 392.00, 261.63, 261.63, 261.63] },
+                    { time: 10000, text: "Life is but a dream.", melody: [392.00, 349.23, 329.63, 293.66, 261.63] },
+                    { time: 13000, text: "🎶 (Keep on rowing!) 🎶", melody: [261.63, 329.63, 392.00] },
+                    { time: 16000, text: "Fantastic Performance!", melody: [523.25] }
+                ],
+                duration: 18000
+            },
+            sunshine: {
+                title: "You Are My Sunshine",
+                notes: [
+                    { time: 1000, text: "You are my sunshine, my only sunshine,", melody: [293.66, 329.63, 392.00, 392.00, 440.00, 392.00, 329.63, 293.66] },
+                    { time: 5000, text: "You make me happy when skies are gray.", melody: [293.66, 329.63, 392.00, 392.00, 440.00, 392.00, 329.63] },
+                    { time: 9000, text: "You'll never know, dear, how much I love you,", melody: [392.00, 440.00, 523.25, 523.25, 493.88, 440.00, 392.00] },
+                    { time: 13000, text: "Please don't take my sunshine away!", melody: [392.00, 329.63, 392.00, 440.00, 392.00, 329.63, 293.66] },
+                    { time: 17000, text: "🎶 (Guitar Solo) 🎶", melody: [261.63, 392.00, 523.25] },
+                    { time: 21000, text: "Wonderful Singing!", melody: [523.25] }
+                ],
+                duration: 23000
+            },
+            abc: {
+                title: "Alphabet Song (ABC)",
+                notes: [
+                    { time: 1000, text: "A B C D E F G,", melody: [261.63, 261.63, 392.00, 392.00, 440.00, 440.00, 392.00] },
+                    { time: 4000, text: "H I J K L M N O P,", melody: [349.23, 349.23, 329.63, 329.63, 293.66, 293.66, 261.63] },
+                    { time: 7500, text: "Q R S, T U V,", melody: [392.00, 392.00, 349.23, 349.23, 329.63, 329.63] },
+                    { time: 10500, text: "W, X, Y and Z.", melody: [392.00, 392.00, 349.23, 349.23, 329.63] },
+                    { time: 13500, text: "Now I know my ABCs,", melody: [261.63, 261.63, 392.00, 392.00, 440.00, 440.00, 392.00] },
+                    { time: 16500, text: "Next time won't you sing with me?", melody: [349.23, 349.23, 329.63, 329.63, 293.66, 261.63] },
+                    { time: 19500, text: "A+ Performance!", melody: [523.25] }
+                ],
+                duration: 21500
+            },
+            mary: {
+                title: "Mary Had a Little Lamb",
+                notes: [
+                    { time: 1000, text: "Mary had a little lamb,", melody: [329.63, 293.66, 261.63, 293.66, 329.63, 329.63, 329.63] },
+                    { time: 4000, text: "Little lamb, little lamb,", melody: [293.66, 293.66, 293.66, 329.63, 392.00, 392.00] },
+                    { time: 7000, text: "Mary had a little lamb,", melody: [329.63, 293.66, 261.63, 293.66, 329.63, 329.63, 329.63] },
+                    { time: 10000, text: "Its fleece was white as snow.", melody: [329.63, 293.66, 293.66, 329.63, 293.66, 261.63] },
+                    { time: 13000, text: "And everywhere that Mary went,", melody: [329.63, 293.66, 261.63, 293.66, 329.63, 329.63, 329.63] },
+                    { time: 16000, text: "The lamb was sure to go!", melody: [293.66, 293.66, 329.63, 293.66, 261.63] },
+                    { time: 19000, text: "Baa Baa!", melody: [329.63, 261.63] }
+                ],
+                duration: 21000
+            },
+            spider: {
+                title: "Itsy Bitsy Spider",
+                notes: [
+                    { time: 1000, text: "The itsy bitsy spider climbed up the waterspout.", melody: [261.63, 392.00, 392.00, 440.00, 392.00, 329.63, 261.63, 329.63] },
+                    { time: 5000, text: "Down came the rain and washed the spider out.", melody: [392.00, 329.63, 293.66, 261.63, 293.66, 329.63, 261.63] },
+                    { time: 9000, text: "Out came the sun and dried up all the rain,", melody: [261.63, 392.00, 392.00, 440.00, 392.00, 329.63, 261.63] },
+                    { time: 13000, text: "And the itsy bitsy spider climbed up the spout again.", melody: [392.00, 329.63, 293.66, 261.63, 293.66, 329.63, 261.63, 523.25] },
+                    { time: 17000, text: "What a climb!", melody: [523.25] }
+                ],
+                duration: 19000
+            },
+            wheels: {
+                title: "Wheels on the Bus",
+                notes: [
+                    { time: 1000, text: "The wheels on the bus go round and round,", melody: [392.00, 523.25, 523.25, 523.25, 392.00, 440.00, 392.00] },
+                    { time: 4500, text: "Round and round, round and round.", melody: [329.63, 392.00, 329.63, 392.00] },
+                    { time: 8000, text: "The wheels on the bus go round and round,", melody: [392.00, 523.25, 523.25, 523.25, 392.00, 440.00, 392.00] },
+                    { time: 11500, text: "All through the town!", melody: [329.63, 293.66, 261.63] },
+                    { time: 14500, text: "Beep! Beep! Beep!", melody: [523.25, 523.25, 523.25] }
+                ],
+                duration: 16500
+            },
+            london: {
+                title: "London Bridge Is Falling Down",
+                notes: [
+                    { time: 1000, text: "London Bridge is falling down,", melody: [392.00, 440.00, 392.00, 349.23, 329.63, 349.23, 392.00] },
+                    { time: 4000, text: "Falling down, falling down.", melody: [329.63, 349.23, 392.00, 329.63, 349.23, 392.00] },
+                    { time: 7000, text: "London Bridge is falling down,", melody: [392.00, 440.00, 392.00, 349.23, 329.63, 349.23, 392.00] },
+                    { time: 10000, text: "My fair lady.", melody: [329.63, 392.00, 261.63] },
+                    { time: 13000, text: "Build it up with wood and clay,", melody: [392.00, 523.25, 493.88, 440.00, 392.00, 349.23, 329.63] },
+                    { time: 16000, text: "Wood and clay, wood and clay.", melody: [329.63, 349.23, 392.00, 329.63, 349.23, 392.00] },
+                    { time: 19000, text: "Great job!", melody: [523.25] }
+                ],
+                duration: 21000
+            },
+            oldmac: {
+                title: "Old MacDonald Had a Farm",
+                notes: [
+                    { time: 1000, text: "Old MacDonald had a farm, E-I-E-I-O!", melody: [392.00, 392.00, 392.00, 329.63, 329.63, 293.66, 392.00] },
+                    { time: 5000, text: "And on that farm he had a cow, E-I-E-I-O!", melody: [392.00, 392.00, 392.00, 329.63, 329.63, 293.66, 392.00] },
+                    { time: 9000, text: "With a moo-moo here and a moo-moo there,", melody: [392.00, 392.00, 392.00, 392.00, 392.00, 392.00] },
+                    { time: 13000, text: "Here a moo, there a moo, everywhere a moo-moo!", melody: [392.00, 392.00, 392.00, 392.00, 392.00, 392.00, 392.00] },
+                    { time: 17000, text: "Old MacDonald had a farm, E-I-E-I-O!", melody: [392.00, 392.00, 392.00, 329.63, 329.63, 293.66, 392.00] },
+                    { time: 20000, text: "E-I-E-I-O!", melody: [392.00, 329.63, 293.66, 261.63] }
+                ],
+                duration: 22000
+            },
+            bumblebee: {
+                title: "Baby Bumblebee",
+                notes: [
+                    { time: 1000, text: "I'm bringing home a baby bumblebee,", melody: [261.63, 329.63, 392.00, 440.00, 392.00, 329.63] },
+                    { time: 4500, text: "Won't my mommy be so proud of me?", melody: [329.63, 392.00, 440.00, 523.25, 440.00, 392.00] },
+                    { time: 8000, text: "I'm bringing home a baby bumblebee,", melody: [261.63, 329.63, 392.00, 440.00, 392.00, 329.63] },
+                    { time: 11500, text: "Ouch! It stung me!", melody: [523.25, 440.00, 392.00] },
+                    { time: 14500, text: "Buzzzzzz!", melody: [440.00, 466.16, 440.00, 392.00] }
+                ],
+                duration: 16500
+            },
+            hokey: {
+                title: "Hokey Pokey",
+                notes: [
+                    { time: 1000, text: "You put your right foot in,", melody: [261.63, 329.63, 392.00, 392.00] },
+                    { time: 4000, text: "You put your right foot out,", melody: [392.00, 329.63, 261.63, 261.63] },
+                    { time: 7000, text: "You put your right foot in,", melody: [261.63, 329.63, 392.00, 392.00] },
+                    { time: 10000, text: "And you shake it all about!", melody: [440.00, 392.00, 329.63, 293.66] },
+                    { time: 13000, text: "You do the Hokey Pokey and you turn yourself around,", melody: [392.00, 440.00, 523.25, 440.00, 392.00, 329.63] },
+                    { time: 17000, text: "That's what it's all about!", melody: [329.63, 293.66, 261.63] },
+                    { time: 20000, text: "Yeah!", melody: [523.25] }
+                ],
+                duration: 22000
+            },
+            bingo: {
+                title: "B-I-N-G-O",
+                notes: [
+                    { time: 1000, text: "There was a farmer who had a dog,", melody: [261.63, 329.63, 392.00, 392.00, 440.00, 392.00, 329.63] },
+                    { time: 4500, text: "And Bingo was his name-o!", melody: [392.00, 440.00, 523.25, 392.00, 329.63] },
+                    { time: 8000, text: "B-I-N-G-O!", melody: [392.00, 440.00, 523.25, 440.00, 392.00] },
+                    { time: 11000, text: "B-I-N-G-O!", melody: [392.00, 440.00, 523.25, 440.00, 392.00] },
+                    { time: 14000, text: "B-I-N-G-O!", melody: [392.00, 440.00, 523.25, 440.00, 392.00] },
+                    { time: 17000, text: "And Bingo was his name-o!", melody: [392.00, 440.00, 523.25, 392.00, 261.63] },
+                    { time: 20000, text: "Woof Woof!", melody: [261.63, 261.63] }
+                ],
+                duration: 22000
+            },
+            shell: {
+                title: "If You're Happy and You Know It",
+                notes: [
+                    { time: 1000, text: "If you're happy and you know it, clap your hands!", melody: [261.63, 261.63, 392.00, 392.00, 440.00, 440.00, 392.00] },
+                    { time: 5000, text: "If you're happy and you know it, clap your hands!", melody: [261.63, 261.63, 392.00, 392.00, 440.00, 440.00, 392.00] },
+                    { time: 9000, text: "If you're happy and you know it, then your face will surely show it,", melody: [349.23, 349.23, 329.63, 329.63, 293.66, 293.66, 261.63] },
+                    { time: 13000, text: "If you're happy and you know it, clap your hands!", melody: [261.63, 261.63, 392.00, 392.00, 440.00, 440.00, 392.00] },
+                    { time: 17000, text: "Clap! Clap!", melody: [523.25, 523.25] }
+                ],
+                duration: 19000
+            }
+        };
+
+        let currentSong = null;
+        let startTime = 0;
+        let score = 0;
+        let animationFrameId = null;
+        let audioCtx = null;
+        let micStream = null;
+        let analyser = null;
+        let dataArray = null;
+        let playedNotes = new Set();
+
+        const setupScreen = document.getElementById('setup-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const songSelect = document.getElementById('song-select');
+        const lyricsBox = document.getElementById('lyrics-box');
+        const scoreVal = document.getElementById('score-val');
+        const pitchVal = document.getElementById('pitch-val');
+
+        startBtn.addEventListener('click', startSong);
+        stopBtn.addEventListener('click', stopSong);
+
+        async function startSong() {
+            const selectedKey = songSelect.value;
+            currentSong = songs[selectedKey];
+
+            setupScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            score = 0;
+            scoreVal.innerText = score;
+            startTime = Date.now();
+            playedNotes.clear();
+
+            try {
+                micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                const source = audioCtx.createMediaStreamSource(micStream);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 512;
+                source.connect(analyser);
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+            } catch (err) {
+                console.log("Mic access denied or unavailable. Running in visual-only mode.");
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            gameLoop();
+        }
+
+        function playMelody(notes) {
+            if (!audioCtx) return;
+            notes.forEach((freq, index) => {
+                let noteTime = audioCtx.currentTime + (index * 0.2);
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, noteTime);
+                
+                gain.gain.setValueAtTime(0.1, noteTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.18);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.start(noteTime);
+                osc.stop(noteTime + 0.2);
+            });
+        }
+
+        function gameLoop() {
+            const elapsed = Date.now() - startTime;
+
+            let activeLyric = "Get Ready...";
+            for (let i = currentSong.notes.length - 1; i >= 0; i--) {
+                let noteObj = currentSong.notes[i];
+                if (elapsed >= noteObj.time) {
+                    activeLyric = noteObj.text;
+                    
+                    if (!playedNotes.has(i)) {
+                        playedNotes.add(i);
+                        playMelody(noteObj.melody);
+                    }
+                    break;
+                }
+            }
+            lyricsBox.innerText = activeLyric;
+
+            if (analyser) {
+                analyser.getByteFrequencyData(dataArray);
+                let sum = dataArray.reduce((a, b) => a + b, 0);
+                let average = sum / dataArray.length;
+
+                if (average > 10) {
+                    pitchVal.innerText = "Good! 🎤";
+                    pitchVal.style.color = "#4ade80";
+                    score += 5;
+                } else {
+                    pitchVal.innerText = "Sing Up!";
+                    pitchVal.style.color = "#f43f5e";
+                }
+                scoreVal.innerText = score;
+            } else {
+                pitchVal.innerText = "No Mic";
+                score += 2;
+                scoreVal.innerText = score;
+            }
+
+            if (elapsed < currentSong.duration) {
+                animationFrameId = requestAnimationFrame(gameLoop);
+            } else {
+                stopSong();
+                lyricsBox.innerText = "🎉 Song Finished! Final Score: " + score;
+            }
+        }
+
+        function stopSong() {
+            cancelAnimationFrame(animationFrameId);
+            if (micStream) {
+                micStream.getTracks().forEach(track => track.stop());
+                micStream = null;
+            }
+            if (audioCtx) {
+                audioCtx.close();
+                audioCtx = null;
+            }
+            gameScreen.classList.add('hidden');
+            setupScreen.classList.remove('hidden');
+        }
+    </script></body></html>

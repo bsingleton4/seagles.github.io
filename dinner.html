@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch the Coin!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            overflow: hidden;
+        }
+        canvas {
+            background: #222;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="gameCanvas" width="480" height="640"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Game Variables
+        let score = 0;
+        let lives = 3;
+        let isGameOver = false;
+
+        // Basket Object
+        const basket = {
+            x: canvas.width / 2 - 50,
+            y: canvas.height - 50,
+            width: 100,
+            height: 20,
+            speed: 8,
+            dx: 0
+        };
+
+        // Coin Object
+        const coin = {
+            x: Math.random() * (canvas.width - 30),
+            y: -30,
+            radius: 15,
+            speed: 4
+        };
+
+        // Keyboard Controls
+        const keys = {
+            left: false,
+            right: false
+        };
+
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft" || e.key === "a") keys.left = true;
+            if (e.key === "ArrowRight" || e.key === "d") keys.right = true;
+        });
+
+        window.addEventListener("keyup", (e) => {
+            if (e.key === "ArrowLeft" || e.key === "a") keys.left = false;
+            if (e.key === "ArrowRight" || e.key === "d") keys.right = false;
+        });
+
+        // Restart on click if game over
+        canvas.addEventListener("click", () => {
+            if (isGameOver) {
+                score = 0;
+                lives = 3;
+                coin.speed = 4;
+                isGameOver = false;
+                resetCoin();
+                loop();
+            }
+        });
+
+        function resetCoin() {
+            coin.x = Math.random() * (canvas.width - 30) + 15;
+            coin.y = -30;
+        }
+
+        function update() {
+            if (isGameOver) return;
+
+            // Move Basket
+            if (keys.left && basket.x > 0) {
+                basket.x -= basket.speed;
+            }
+            if (keys.right && basket.x + basket.width < canvas.width) {
+                basket.x += basket.speed;
+            }
+
+            // Move Coin
+            coin.y += coin.speed;
+
+            // Check Collision with Basket
+            if (
+                coin.y + coin.radius >= basket.y &&
+                coin.x >= basket.x &&
+                coin.x <= basket.x + basket.width
+            ) {
+                score++;
+                coin.speed += 0.1; // Gradually increase difficulty
+                resetCoin();
+            }
+
+            // Check if Coin Missed
+            if (coin.y > canvas.height) {
+                lives--;
+                if (lives <= 0) {
+                    isGameOver = true;
+                } else {
+                    resetCoin();
+                }
+            }
+        }
+
+        function draw() {
+            // Clear Screen
+            ctx.fillStyle = "#222";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (!isGameOver) {
+                // Draw Basket
+                ctx.fillStyle = "#ffcc00";
+                ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
+
+                // Draw Coin
+                ctx.beginPath();
+                ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
+                ctx.fillStyle = "#00ffcc";
+                ctx.fill();
+                ctx.closePath();
+
+                // Draw Score and Lives
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "20px Arial";
+                ctx.fillText(`Score: ${score}`, 20, 35);
+                ctx.fillText(`Lives: ${lives}`, canvas.width - 100, 35);
+            } else {
+                // Game Over Screen
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "35px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 30);
+                
+                ctx.font = "20px Arial";
+                ctx.fillText(`Final Score: ${score}`, canvas.width / 2, canvas.height / 2 + 10);
+                
+                ctx.fillStyle = "#00ffcc";
+                ctx.fillText("Click anywhere to restart", canvas.width / 2, canvas.height / 2 + 60);
+                ctx.textAlign = "left"; // Reset alignment
+            }
+        }
+
+        function loop() {
+            update();
+            draw();
+            if (!isGameOver) {
+                requestAnimationFrame(loop);
+            }
+        }
+
+        // Initialize Game Loop
+        loop();
+    </script>
+</body>
+</html>
+ 
