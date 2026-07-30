@@ -1,1 +1,514 @@
- 
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeeDoh Haven | The Ultimate Squish Destination</title>
+    <style>
+        :root {
+            --primary: #ff6b8b;
+            --secondary: #4ecdc4;
+            --accent: #ffe66d;
+            --dark: #2d3436;
+            --light: #f7f1e3;
+            --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font);
+        }
+
+        body {
+            background-color: #fff9f5;
+            color: var(--dark);
+        }
+
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-btn {
+            background: white;
+            color: var(--primary);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .cart-btn:hover {
+            transform: scale(1.05);
+            background: var(--accent);
+            color: var(--dark);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: radial-gradient(circle, rgba(255,230,109,0.3) 0%, rgba(255,255,255,0) 70%);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #636e72;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            border-bottom: 3px solid var(--accent);
+            display: inline-block;
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            height: 200px;
+            background: #dfe6e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-desc {
+            font-size: 0.9rem;
+            color: #b2bec3;
+            margin-bottom: 1rem;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .buy-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .buy-btn:hover {
+            background: #ff5277;
+        }
+
+        /* Cart Drawer */
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: right 0.3s ease-in-out;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-drawer.open {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 1.5rem;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-details h4 {
+            font-size: 1rem;
+        }
+
+        .cart-item-details p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #ff7675;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .cart-footer {
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+        }
+
+        .cart-totals-breakdown {
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .cart-totals-breakdown div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.4rem;
+            color: #555;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            border-top: 1px dashed #ccc;
+            padding-top: 0.5rem;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .checkout-btn:hover {
+            background: #3dbdb4;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <span>🟢</span> NeeDoh Haven
+        </div>
+        <button class="cart-btn" onclick="toggleCart()">🛒 Cart (<span id="cart-count">0</span>)</button>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Squeeze Your Stress Away!</h1>
+        <p>Explore our massive collection of over 50 authentic NeeDoh fidget toys and sunny-day squeezes. Satisfying textures, vibrant colors, and ultimate squishiness await you.</p>
+    </section>
+
+    <!-- Main Store Content -->
+    <div class="container">
+        <h2 class="section-title">The Massive Squish Collection (56 Items)</h2>
+        
+        <div class="product-grid" id="product-grid">
+            <!-- Products injected via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Shopping Cart Drawer -->
+    <div class="cart-drawer" id="cart-drawer">
+        <div class="cart-header">
+            <h3>Your Squish Bag</h3>
+            <button class="close-cart" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <p style="color: #888; text-align: center; margin-top: 2rem;">Your cart is empty!</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-totals-breakdown">
+                <div><span>Subtotal:</span> <span id="cart-subtotal">$0.00</span></div>
+                <div><span>Estimated Tax (8%):</span> <span id="cart-tax">$0.00</span></div>
+            </div>
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 NeeDoh Haven. All squishes reserved. Stay groovy! ✨</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const products = [
+            { id: 1, name: "Classic NeeDoh", price: 5.99, desc: "The original groovy guy that started it all.", emoji: "🟢" },
+            { id: 2, name: "Nice Cube NeeDoh", price: 6.50, desc: "Feels like a cool, squishy ice cube.", emoji: "🧊" },
+            { id: 3, name: "Super NeeDoh", price: 8.99, desc: "Extra large for maximum two-handed squishing.", emoji: "🔵" },
+            { id: 4, name: "Teenie NeeDoh", price: 3.99, desc: "Pocket-sized mini squish companion.", emoji: "🟢" },
+            { id: 5, name: "NeeDoh Glow In The Dark", price: 7.25, desc: "Charge it up and watch it light up the night.", emoji: "🟡" },
+            { id: 6, name: "Color Change NeeDoh", price: 7.50, desc: "Transforms colors right in the palm of your hand.", emoji: "🟣" },
+            { id: 7, name: "Sunny Day Squeeze", price: 6.99, desc: "Bright yellow sun ball that radiates positive vibes.", emoji: "☀️" },
+            { id: 8, name: "Sunny Day Citrus Pop", price: 6.99, desc: "Juicy orange squeeze to brighten up a cloudy afternoon.", emoji: "🍊" },
+            { id: 9, name: "Sunny Day Daisy", price: 7.25, desc: "Soft white petals filled with ultra-soft squish dough.", emoji: "🌼" },
+            { id: 10, name: "Sunny Day Ray of Light", price: 7.50, desc: "Golden shimmer core that sparkles in bright sunlight.", emoji: "✨" },
+            { id: 11, name: "Sunny Day Sunset Ball", price: 7.99, desc: "Gradient pink and orange tones for a tranquil squeeze.", emoji: "🌅" },
+            { id: 12, name: "Sunny Day Mango Splash", price: 6.50, desc: "Tropical tropical-scented texture feel.", emoji: "🥭" },
+            { id: 13, name: "Sunny Day Warm Breeze", price: 6.99, desc: "Lightweight dough that feels like a summer wind.", emoji: "🍃" },
+            { id: 14, name: "Sunny Day Golden Hour", price: 8.25, desc: "Rich amber filling with metallic sheen.", emoji: "🍯" },
+            { id: 15, name: "Sunny Day Beach Ball", price: 7.50, desc: "Multi-colored panels built for outdoor relaxation.", emoji: "🏖️" },
+            { id: 16, name: "Sunny Day Starburst", price: 7.99, desc: "Bright radiant spikes for deep sensory feedback.", emoji: "⭐" },
+            { id: 17, name: "Sunny Day Lemon Drop", price: 5.99, desc: "Zesty small-format squishy ball.", emoji: "🍋" },
+            { id: 18, name: "Sunny Day Pineapple Pop", price: 8.50, desc: "Textured outer skin mimicking a tropical treat.", emoji: "🍍" },
+            { id: 19, name: "Sunny Day Heatwave", price: 7.75, desc: "Deep red-orange thermal shifting material.", emoji: "🔥" },
+            { id: 20, name: "Sunny Day Horizon", price: 7.25, desc: "Calming pastel blue and yellow blend.", emoji: "🌤️" },
+            { id: 21, name: "Mellow Mushroom NeeDoh", price: 7.99, desc: "Fungus friend with a velvety smooth squish.", emoji: "🍄" },
+            { id: 22, name: "Cali Bear NeeDoh", price: 8.50, desc: "Adorable little bear packed with satisfying dough.", emoji: "🧸" },
+            { id: 23, name: "Dohje Cat Squish", price: 7.99, desc: "Purr-fectly soft feline stress reliever.", emoji: "🐱" },
+            { id: 24, name: "Hedgehog NeeDoh", price: 8.25, desc: "Bumpy texture providing mild tactile therapy.", emoji: "🦔" },
+            { id: 25, name: "Boosh NeeDoh", price: 6.99, desc: "Uniquely textured sphere that begs to be squished.", emoji: "🔮" },
+            { id: 26, name: "Crystal NeeDoh", price: 7.50, desc: "Translucent gem-like compound inside.", emoji: "💎" },
+            { id: 27, name: "Macaron NeeDoh", price: 6.50, desc: "Pastel French pastry design filled with soft dough.", emoji: "🍪" },
+            { id: 28, name: "Dough-nut NeeDoh", price: 7.25, desc: "Glazed donut shape with a doughy center.", emoji: "🍩" },
+            { id: 29, name: "Heart NeeDoh", price: 6.99, desc: "Spread the love with every firm squeeze.", emoji: "❤️" },
+            { id: 30, name: "Star NeeDoh", price: 6.99, desc: "Reach for the stars with this cosmic squishy.", emoji: "🌟" },
+            { id: 31, name: "Moon Drop NeeDoh", price: 7.50, desc: "Silvery cratered surface for unique grip.", emoji: "🌙" },
+            { id: 32, name: "Galaxy NeeDoh", price: 8.99, desc: "Swirled deep-space nebula colors.", emoji: "🌌" },
+            { id: 33, name: "Cosmic Crunch NeeDoh", price: 8.50, desc: "Filled with tiny crunch beads for dual textures.", emoji: "🪐" },
+            { id: 34, name: "Mermaid NeeDoh", price: 8.25, desc: "Shimmering scale pattern with ocean vibes.", emoji: "🧜‍♀️" },
+            { id: 35, name: "Unicorn NeeDoh", price: 8.50, desc: "Magical pastel rainbow dough with a tiny horn.", emoji: "🦄" },
+            { id: 36, name: "Dragon Egg NeeDoh", price: 9.25, desc: "Scaly textured shell hiding a fiery secret.", emoji: "🐉" },
+            { id: 37, name: "Dinomite NeeDoh", price: 8.75, desc: "Prehistoric pal ready for heavy crushing.", emoji: "🦖" },
+            { id: 38, name: "Froggy NeeDoh", price: 7.50, desc: "Leap into relaxation with this little green hopper.", emoji: "🐸" },
+            { id: 39, name: "Duckling NeeDoh", price: 7.25, desc: "Quack up your day with a cute feathered squeeze.", emoji: "🦆" },
+            { id: 40, name: "Bunny Hop NeeDoh", price: 7.99, desc: "Long floppy ears and an ultra-soft belly.", emoji: "🐰" },
+            { id: 41, name: "Panda Paws NeeDoh", price: 8.00, desc: "Monochrome comfort ball for stress-free days.", emoji: "🐼" },
+            { id: 42, name: "Koala Snug NeeDoh", price: 8.25, desc: "Eucalyptus-inspired gray tones with cozy vibes.", emoji: "🐨" },
+            { id: 43, name: "Sloth Slow NeeDoh", price: 8.50, desc: "Take it easy with this relaxed slow-rise texture.", emoji: "🦥" },
+            { id: 44, name: "Turtle Shell NeeDoh", price: 7.99, desc: "Hexagon patterned shell for satisfying thumb rolls.", emoji: "🐢" },
+            { id: 45, name: "Octopus Pal NeeDoh", price: 8.99, desc: "Eight squishy tentacles packed with tactile fun.", emoji: "🐙" },
+            { id: 46, name: "Whale Splash NeeDoh", price: 9.10, desc: "Deep blue oceanic squishy giant.", emoji: "🐋" },
+            { id: 47, name: "Shark Bite NeeDoh", price: 8.50, desc: "Fierce look, gentle squish.", emoji: "🦈" },
+            { id: 48, name: "Cactus Hug NeeDoh", price: 7.75, desc: "Prickle-free green succulent texture.", emoji: "🌵" },
+            { id: 49, name: "Palm Tree NeeDoh", price: 8.25, desc: "Tropical island shade packed in your hands.", emoji: "🌴" },
+            { id: 50, name: "Volcano Flow NeeDoh", price: 8.99, desc: "Molten-looking red and black marble finish.", emoji: "🌋" },
+            { id: 51, name: "Snowflake NeeDoh", price: 7.50, desc: "Crisp winter texture for cool-down relief.", emoji: "❄️" },
+            { id: 52, name: "Frosty Pine NeeDoh", price: 7.99, desc: "Evergreen forest breeze enclosed in a sphere.", emoji: "🌲" },
+            { id: 53, name: "Autumn Leaf NeeDoh", price: 7.25, desc: "Crisp red and brown foliage tones.", emoji: "🍁" },
+            { id: 54, name: "Pumpkin Spice NeeDoh", price: 8.00, desc: "Cozy autumn staple feel with warm coloring.", emoji: "🎃" },
+            { id: 55, name: "Spooky Ghost NeeDoh", price: 7.75, desc: "Glow-in-the-dark white spirit for playful frights.", emoji: "👻" },
+            { id: 56, name: "Rainbow Shimmer NeeDoh", price: 9.50, desc: "The ultimate chromatic multi-colored mega-squish.", emoji: "🌈" }
+        ];
+
+        let cart = [];
+        const TAX_RATE = 0.08; // 8% sales tax
+
+        // Render products to the page
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <div class="product-image">${product.emoji}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-desc">${product.desc}</div>
+                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <button class="buy-btn" onclick="addToCart(${product.id})">Add to Cart</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Toggle Cart Drawer
+        function toggleCart() {
+            const drawer = document.getElementById('cart-drawer');
+            drawer.classList.toggle('open');
+        }
+
+        // Add item to cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+
+            if (cartItem) {
+                cartItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCartUI();
+            toggleCart(); // Open cart automatically on add
+        }
+
+        // Remove item from cart
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCartUI();
+        }
+
+        // Update Cart UI components with subtotal, tax, and total
+        function updateCartUI() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartSubtotal = document.getElementById('cart-subtotal');
+            const cartTax = document.getElementById('cart-tax');
+            const cartTotalPrice = document.getElementById('cart-total-price');
+
+            // Total item count calculation
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCount.innerText = totalCount;
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `<p style="color: #888; text-align: center; margin-top: 2rem;">Your cart is empty!</p>`;
+                cartSubtotal.innerText = "$0.00";
+                cartTax.innerText = "$0.00";
+                cartTotalPrice.innerText = "$0.00";
+                return;
+            }
+
+            let subtotal = 0;
+            cartItemsContainer.innerHTML = cart.map(item => {
+                subtotal += item.price * item.quantity;
+                return `
+                    <div class="cart-item">
+                        <div class="cart-item-details">
+                            <h4>${item.emoji} ${item.name}</h4>
+                            <p>$${item.price.toFixed(2)} x ${item.quantity}</p>
+                        </div>
+                        <button class="remove-item" onclick="removeFromCart(${item.id})">Remove</button>
+                    </div>
+                `;
+            }).join('');
+
+            const taxAmount = subtotal * TAX_RATE;
+            const finalTotal = subtotal + taxAmount;
+
+            cartSubtotal.innerText = `$${subtotal.toFixed(2)}`;
+            cartTax.innerText = `$${taxAmount.toFixed(2)}`;
+            cartTotalPrice.innerText = `$${finalTotal.toFixed(2)}`;
+        }
+
+        // Checkout simulation
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+            alert("🎉 Thank you for your order! Your NeeDohs and Sunny Day Squeezes are on their way to bring you maximum squish.");
+            cart = [];
+            updateCartUI();
+            toggleCart();
+        }
+
+        // Initialize store on load
+        renderProducts();
+    </script>
+</body>
+</html>
